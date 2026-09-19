@@ -93,13 +93,70 @@ state = {
     #Store the contents of the nine squares.
     #None means that the square is available.
     'board': [None] * 9,
+
+    #Indicate whether the game has already finished.
+    'finished': False,
 }
 
 players = [drawx, drawo]
 
 
+def check_winner():
+    """Return winning player or None."""
+    board = state['board']
+
+    #Store every possible winning combination.
+    winning_lines = (
+        (0, 1, 2),
+        (3, 4, 5),
+        (6, 7, 8),
+        (0, 3, 6),
+        (1, 4, 7),
+        (2, 5, 8),
+        (0, 4, 8),
+        (2, 4, 6),
+    )
+
+    #Check every possible winning combination.
+    for a, b, c in winning_lines:
+        if (
+            board[a] is not None
+            and board[a] == board[b]
+            and board[b] == board[c]
+        ):
+            return board[a]
+
+    return None
+
+
+def board_is_full():
+    """Return True if all squares are occupied."""
+    #Check that every square contains a move.
+    return all(square is not None for square in state['board'])
+
+
+def show_message(text):
+    """Display game result."""
+    #Move above the board to display the result.
+    up()
+    goto(0, 205)
+    color('black')
+
+    write(
+        text,
+        align='center',
+        font=('Arial', 16, 'bold'),
+    )
+
+    update()
+
+
 def tap(x, y):
     """Draw X or O in tapped square."""
+    #Ignore clicks after the game has finished.
+    if state['finished']:
+        return
+
     #Get the selected board position.
     index = square_index(x, y)
 
@@ -124,11 +181,31 @@ def tap(x, y):
 
     update()
 
+    #Check whether the current move created a winner.
+    winner = check_winner()
+
+    if winner is not None:
+        #Stop the game after detecting a winner.
+        state['finished'] = True
+
+        if winner == 0:
+            show_message('X wins!')
+        else:
+            show_message('O wins!')
+
+        return
+
+    #End the game in a draw if every square is occupied.
+    if board_is_full():
+        state['finished'] = True
+        show_message('Draw!')
+        return
+
     #Change turns only after a valid move.
     state['player'] = not player
 
 
-setup(420, 420, 370, 0)
+setup(420, 460, 370, 0)
 hideturtle()
 tracer(False)
 grid()
