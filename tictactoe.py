@@ -67,18 +67,64 @@ def floor(value):
     return ((value + 200) // 133) * 133 - 200
 
 
-state = {'player': 0}
+def square_index(x, y):
+    """Return board index for tapped coordinates."""
+    #Convert the click to the square origin.
+    square_x = floor(x)
+    square_y = floor(y)
+
+    #Store the three valid positions for rows and columns.
+    positions = (-200, -67, 66)
+
+    #Ignore clicks outside the board.
+    if square_x not in positions or square_y not in positions:
+        return None
+
+    #Convert the square coordinates into a position from 0 to 8.
+    column = positions.index(square_x)
+    row = positions.index(square_y)
+
+    return row * 3 + column
+
+
+state = {
+    'player': 0,
+
+    #Store the contents of the nine squares.
+    #None means that the square is available.
+    'board': [None] * 9,
+}
+
 players = [drawx, drawo]
 
 
 def tap(x, y):
     """Draw X or O in tapped square."""
+    #Get the selected board position.
+    index = square_index(x, y)
+
+    #Ignore clicks outside the board.
+    if index is None:
+        return
+
+    #Prevent players from selecting an occupied square.
+    if state['board'][index] is not None:
+        return
+
     x = floor(x)
     y = floor(y)
+
     player = state['player']
     draw = players[player]
+
     draw(x, y)
+
+    #Store the move in the selected square.
+    state['board'][index] = player
+
     update()
+
+    #Change turns only after a valid move.
     state['player'] = not player
 
 
