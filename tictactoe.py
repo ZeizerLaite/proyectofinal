@@ -23,16 +23,43 @@ def grid():
 
 def drawx(x, y):
     """Draw X player."""
-    line(x, y, x + 133, y + 133)
-    line(x, y + 133, x + 133, y)
+    #Set the color and width for X.
+    color('blue')
+    width(8)
+
+    #Leave a margin to keep X centered inside the square.
+    margin = 25
+
+    up()
+    goto(x + margin, y + margin)
+    down()
+    goto(x + 133 - margin, y + 133 - margin)
+
+    up()
+    goto(x + margin, y + 133 - margin)
+    down()
+    goto(x + 133 - margin, y + margin)
+    up()
 
 
 def drawo(x, y):
     """Draw O player."""
+    #Set the color and width for O.
+    color('red')
+    width(8)
+
+    #Calculate the center of the selected square.
+    radius = 42
+    center_x = x + 66.5
+    center_y = y + 66.5
+
+    #Move to the bottom point of the circle.
     up()
-    goto(x + 67, y + 5)
+    goto(center_x, center_y - radius)
+    setheading(0)
     down()
-    circle(62)
+    circle(radius)
+    up()
 
 
 def floor(value):
