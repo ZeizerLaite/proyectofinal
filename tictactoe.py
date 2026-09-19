@@ -15,8 +15,11 @@ from freegames import line
 
 def grid():
     """Draw tic-tac-toe grid."""
+    #Draw the two vertical lines.
     line(-67, 200, -67, -200)
     line(67, 200, 67, -200)
+
+    #Draw the two horizontal lines.
     line(-200, -67, 200, -67)
     line(-200, 67, 200, 67)
 
@@ -30,11 +33,13 @@ def drawx(x, y):
     #Leave a margin to keep X centered inside the square.
     margin = 25
 
+    #Draw the first diagonal.
     up()
     goto(x + margin, y + margin)
     down()
     goto(x + 133 - margin, y + 133 - margin)
 
+    #Draw the second diagonal.
     up()
     goto(x + margin, y + 133 - margin)
     down()
@@ -57,6 +62,8 @@ def drawo(x, y):
     up()
     goto(center_x, center_y - radius)
     setheading(0)
+
+    #Draw the centered circle.
     down()
     circle(radius)
     up()
@@ -80,7 +87,7 @@ def square_index(x, y):
     if square_x not in positions or square_y not in positions:
         return None
 
-    #Convert the square coordinates into a position from 0 to 8.
+    #Convert the coordinates into a position from 0 to 8.
     column = positions.index(square_x)
     row = positions.index(square_y)
 
@@ -88,6 +95,7 @@ def square_index(x, y):
 
 
 state = {
+    #Store the current player.
     'player': 0,
 
     #Store the contents of the nine squares.
@@ -98,6 +106,8 @@ state = {
     'finished': False,
 }
 
+
+#Associate each player with its drawing function.
 players = [drawx, drawo]
 
 
@@ -126,6 +136,7 @@ def check_winner():
         ):
             return board[a]
 
+    #Return None when nobody has won.
     return None
 
 
@@ -142,6 +153,7 @@ def show_message(text):
     goto(0, 205)
     color('black')
 
+    #Write the result centered above the board.
     write(
         text,
         align='center',
@@ -168,12 +180,15 @@ def tap(x, y):
     if state['board'][index] is not None:
         return
 
+    #Convert the click to the square origin.
     x = floor(x)
     y = floor(y)
 
+    #Get the current player and drawing function.
     player = state['player']
     draw = players[player]
 
+    #Draw the current player's symbol.
     draw(x, y)
 
     #Store the move in the selected square.
@@ -188,6 +203,7 @@ def tap(x, y):
         #Stop the game after detecting a winner.
         state['finished'] = True
 
+        #Player 0 represents X and player 1 represents O.
         if winner == 0:
             show_message('X wins!')
         else:
@@ -205,10 +221,21 @@ def tap(x, y):
     state['player'] = not player
 
 
+#Use a taller window to leave room for the result.
 setup(420, 460, 370, 0)
+
+#Hide the turtle cursor.
 hideturtle()
+
+#Disable automatic screen updates.
 tracer(False)
+
+#Draw the board.
 grid()
 update()
+
+#Call tap whenever the player clicks the screen.
 onscreenclick(tap)
+
+#Keep the game window open.
 done()
